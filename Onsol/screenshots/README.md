@@ -8,4 +8,4 @@
 ![Incorrect password](./login-incorrect-password.png)
 
 ### 🚫 Username not found
-![User not found](./login-incorrect-username.png.)
+![User not found](./login-incorrect-username.png)
