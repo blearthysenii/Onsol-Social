@@ -2,7 +2,7 @@
 # 🖼️ Screenshots
 
 ### ✅ Successful login
-![Login success](../login.png)
+![Login success](login.png)
 
 ### ❌ Incorrect password
 ![Incorrect password](./login-incorrect-password.png)
