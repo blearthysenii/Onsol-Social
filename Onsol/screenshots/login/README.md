@@ -1,5 +1,6 @@
 
-# 🖼️ Screenshots
+# 🖼️ screenshots/login
+
 
 ### ✅ Successful login
 ![Login success](login.png)
@@ -9,3 +10,4 @@
 
 ### 🚫 Username not found
 ![User not found](./login-incorrect-username.png)
+
