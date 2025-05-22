@@ -58,22 +58,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.20);
 
 }
-input{    
-    padding-top:20px;
-    padding-right:100px ;
-    padding-bottom:20px;
-    padding-left:7px;
-    font-size: 16px;
-    text-align: left;
+input {
+    padding: 10px 15px;         
+    height: 50px;              
+    line-height: 50px;          
+    font-size: 18px;            
+    text-align: left;          
+    box-sizing: border-box;     
 }
+
+
 .usernameClass{
-    margin-bottom:10px;
+    margin-bottom:15px;
 }
 .emailClass{
-    margin-bottom:10px;
+    margin-bottom:15px;
 }
 .passwordClass{
-    margin-bottom:20px;
+    margin-bottom:30px;
 }
 
         </style>
