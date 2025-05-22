@@ -17,7 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hash')";
 
         if ($conn->query($sql) === TRUE) {
-            $message = "Registration successful!";
+        header("Location: login.php");
+        exit();
         } else {
             if ($conn->errno == 1062) {
                 $message = "Username or email already exists.";

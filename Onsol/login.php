@@ -15,8 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       
         if (password_verify($password, $user['password'])) {
-            echo "Login successful! Welcome, " . htmlspecialchars($user['username']);
-            // Here you can set session variables if needed
+            header("Location: index.php");
         } else {
             echo "Incorrect password!";
         }
@@ -24,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "User not found!";
     }
 } else {
-    echo "Invalid request method.";
+    echo "Write your username and";
 }
 ?>
 

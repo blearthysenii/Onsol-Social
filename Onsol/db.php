@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "onsol_db";
+$db = "onsol_db1";
 
 $conn = new mysqli($host, $user , $pass , $db);
 
