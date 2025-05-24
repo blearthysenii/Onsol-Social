@@ -1,7 +1,8 @@
 <?php
 include 'db.php';
 
-$message = "";  // Variable to hold messages
+$message = "";
+$messageType = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $conn->real_escape_string(trim($_POST['username']));
@@ -10,21 +11,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($username) || empty($email) || empty($password)) {
         $message = "Please fill in all fields.";
+        $messageType = "error";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = "Invalid email format.";
+        $messageType = "error";
     } else {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
         $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hash')";
 
         if ($conn->query($sql) === TRUE) {
-        header("Location: login.php");
-        exit();
+            $message = "Registration successful! Redirecting to login...";
+            $messageType = "success";
+            header("refresh:2; url=login.php");
         } else {
             if ($conn->errno == 1062) {
                 $message = "Username or email already exists.";
             } else {
                 $message = "Error: " . $conn->error;
             }
+            $messageType = "error";
         }
     }
 }
@@ -34,64 +39,211 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Register</title>
     <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    body {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;  
-    align-items: center;      
-    height: 100vh;            
-    background-color: #f0f0f0; 
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #000000, #0a1a3f);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
 
+        .register-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            animation: fadeIn 1s ease-in-out;
+            transition: all 0.9s ease-in-out;
+            position: relative;
+            z-index: 10;
+        }
+
+        .register-container:hover {
+            background: linear-gradient(135deg, rgba(20, 0, 40, 0.95), rgba(0, 30, 100, 0.95));
+            transform: scale(1.019);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .register-container h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: white;
+            background: linear-gradient(135deg, #348aff, #ff5ef7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.4s ease-in-out;
+        }
+
+        .register-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .register-container input::placeholder {
+            color: #eee;
+        }
+
+        .register-container button {
+            width: 100%;
+            padding: 15px 0;
+            margin-top: 15px;
+            border: none;
+            border-radius: 25px;
+            background-color: #3a2a6a;
+            background-image: linear-gradient(45deg, #3a2a6a 0%, #0050ff 100%);
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 100, 255, 0.4);
+        }
+
+        .register-container button:hover {
+            transform: scale(1.01);
+            box-shadow: 0 2px 10px rgba(0, 180, 255, 0.7);
+        }
+
+        .register-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            z-index: 100000;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 18px;
+            max-width: 500px;
+            text-align: center;
+            margin: 0;
+            user-select: none;
+            cursor: default;
+            opacity: 0;
+            animation: slideDownFadeIn 0.7s forwards ease-in-out;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+        }
+
+        .register-message.error {
+            background: rgba(255, 0, 80, 0.2);
+            color: #ff3366;
+            box-shadow: 0 4px 20px rgba(255, 0, 80, 0.6);
+        }
+
+        .register-message.error:hover {
+            background: linear-gradient(135deg, rgba(100, 0, 40, 0.95), rgba(150, 0, 50, 0.95));
+            box-shadow: 0 6px 25px rgba(255, 0, 80, 0.9);
+            transform: translateX(-50%) scale(1.03);
+            color: #ff99aa;
+        }
+
+        .register-message.success {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.6);
+        }
+
+        .register-message.success:hover {
+            background: linear-gradient(135deg, rgba(0, 100, 100, 0.95), rgba(0, 150, 150, 0.95));
+            box-shadow: 0 6px 25px rgba(0, 255, 255, 0.9);
+            transform: translateX(-50%) scale(1.03);
+            color: #99ffff;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideDownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .register-container p a {
+  position: relative;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  background: linear-gradient(135deg, #4e2eff, #ff6ec4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 0.3s ease;
+  display: inline-block;
 }
 
-    .registerForm {
-    text-align: center;
-    padding: 100px;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.20);
-
-}
-input {
-    padding: 10px 15px;         
-    height: 50px;              
-    line-height: 50px;          
-    font-size: 18px;            
-    text-align: left;          
-    box-sizing: border-box;     
+.register-container p a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(135deg, #4e2eff, #ff6ec4);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
 }
 
-
-.usernameClass{
-    margin-bottom:15px;
-}
-.emailClass{
-    margin-bottom:15px;
-}
-.passwordClass{
-    margin-bottom:30px;
+.register-container p a:hover::after {
+  transform: scaleX(1);
 }
 
-        </style>
 
-     
+    </style>
 </head>
 <body>
-    <?php if ($message) : ?>
-        <p><?php echo htmlspecialchars($message); ?></p>
-    <?php endif; ?>
 
-    <form action="register.php" method="POST" class="registerForm">
-        <input class ="usernameClass" type="text" name="username" placeholder="Username" required /><br />
-        <input class = "emailClass" type="email" name="email" placeholder="Email" required /><br />
-        <input class = "passwordClass" type="password" name="password" placeholder="Password" required /><br />
+<?php if ($message): ?>
+    <div class="register-message <?php echo $messageType; ?>">
+        <?php echo htmlspecialchars($message); ?>
+    </div>
+<?php endif; ?>
+
+<div class="register-container">
+    <h2>Create Account</h2>
+    <form action="register.php" method="POST" autocomplete="off">
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="password" placeholder="Password" required />
         <button type="submit">Register</button>
     </form>
+    <p>Already have an account? <a href="login.php">Login here!</a></p>
+</div>
+
 </body>
 </html>

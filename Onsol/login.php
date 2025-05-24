@@ -1,31 +1,39 @@
 <?php
-include 'db.php';  
+session_start();
+include 'db.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    $username = $conn->real_escape_string(trim($_POST['username']));
+$errorMessage = '';
+$showWelcomeMessage = true;
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM users WHERE username = '$username'";
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
 
     if ($result && $result->num_rows === 1) {
         $user = $result->fetch_assoc();
 
         if (password_verify($password, $user['password'])) {
-            session_start();
-            $_SESSION['user'] = $user; 
+            $_SESSION['user'] = $user;
             header("Location: index.php");
             exit;
         } else {
             $errorMessage = "Incorrect password!";
+            $showWelcomeMessage = false;
         }
     } else {
         $errorMessage = "User not found!";
+        $showWelcomeMessage = false;
     }
+
+    $stmt->close();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,7 +77,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
            background: linear-gradient(135deg, rgba(20, 0, 40, 0.95), rgba(0, 30, 100, 0.95));
             transform: scale(1.019);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-            box-shadow: 0 6px 25px rgba(0, 180, 255, 0.7);
         }
 
         .login-container h2 {
@@ -100,23 +107,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .login-container button {
             width: 100%;
-            padding: 12px;
-            margin-top: 10px;
+            padding: 15px 0;
+            margin-top: 15px;
             border: none;
-            border-radius: 12px;
+            border-radius: 25px;
             background-color: #3a2a6a;
             background-image: linear-gradient(45deg, #3a2a6a 0%, #0050ff 100%);
-            color: #e0e8ff;
-            font-size: 18px;
-            font-weight: bold;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 100, 255, 0.4);
         }
 
         .login-container button:hover {
-            transform: scale(1.05);
-            background-color: #2a1f55;
-            background-image: linear-gradient(45deg, #2a1f55 0%, #0040cc 100%);
+            transform: scale(1.01);
+            box-shadow: 0 2px 10px rgba(0, 180, 255, 0.7);
         }
 
         .login-container p {
@@ -150,37 +157,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, background-color 0.3s ease;
         }
 
+        .login-message.error {
+            background: linear-gradient(135deg, #700000, #ff0000);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.7);
+        }
+
         .login-message:hover {
             background: linear-gradient(135deg, rgba(30, 15, 60, 1), rgba(0, 50, 180, 1));
             box-shadow: 0 6px 25px rgba(0, 180, 255, 0.7);
             transform: translateX(-50%) scale(1.03);
             color: #00ffff;
-        }.signup-text {
-  margin-top: 25px;
-  font-size: 16px;
-  color: #ddd;
-  font-weight: 500;
-  user-select: none;
-}
+        }
 
-.signup-link {
-  color: #82aaff;
-  font-weight: 700;
-  text-decoration: none;
-  background: linear-gradient(135deg, #348aff, #ff5ef7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
+        .signup-text {
+            margin-top: 25px;
+            font-size: 16px;
+            color: #ddd;
+            font-weight: 500;
+            user-select: none;
+        }
 
-.signup-link:hover,
-.signup-link:focus {
-  text-shadow: 0 0 8px #ff61a6, 0 0 12px #82aaff;
-  transform: scale(1.05);
-  outline: none;
-}
+        .signup-link {
+            position: relative;
+            font-weight: 700;
+            text-decoration: none;
+            background: linear-gradient(135deg, #4e2eff, #ff6ec4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
 
+        .signup-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(135deg, #4e2eff, #ff6ec4);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .signup-link:hover,
+        .signup-link:focus {
+            transform: scale(1.02);
+            outline: none;
+        }
+
+        .signup-link:hover::after {
+            transform: scaleX(1);
+        }
 
         @keyframes fadeIn {
             from {
@@ -208,11 +239,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
 <?php
-if (isset($errorMessage)) {
+if (!empty($errorMessage)) {
     echo '<div class="login-message error">' . htmlspecialchars($errorMessage) . '</div>';
-} elseif ($_SERVER["REQUEST_METHOD"] != "POST") {
-   echo '<div class="login-message">Say hi to Onsol, your space for innovation!</div>';
-
+} elseif ($showWelcomeMessage) {
+    echo '<div class="login-message">Say hi to Onsol, your space for innovation!</div>';
 }
 ?>
 
@@ -224,9 +254,9 @@ if (isset($errorMessage)) {
         <button type="submit">Login</button>
     </form>
     <p class="signup-text">
-  Don't have an account? 
-  <a href="register.php" class="signup-link">Create one!</a>
-</p>
+        Don't have an account? 
+        <a href="register.php" class="signup-link">Create one!</a>
+    </p>
 </div>
 
 </body>
