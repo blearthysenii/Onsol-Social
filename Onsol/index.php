@@ -2,15 +2,12 @@
 session_start();
 include 'db.php';
 
-// Nëse përdoruesi nuk është i kyçur, ridrejto në login
+
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit;
 }
 
-// Merr fotot me komentet e tyre nga DB
-// Supozim: kemi tabela photos(id, user_id, image_path, caption, created_at)
-// dhe comments(id, photo_id, user_id, comment_text, created_at)
 
 function getUsername($conn, $user_id) {
     $stmt = $conn->prepare("SELECT username FROM users WHERE id = ?");
@@ -48,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['photo_id']) && isset(
     }
 }
 
-// Merr komentet për secilën foto
+
 function getComments($conn, $photo_id) {
     $stmt = $conn->prepare("SELECT * FROM comments WHERE photo_id = ? ORDER BY created_at ASC");
     $stmt->bind_param("i", $photo_id);
