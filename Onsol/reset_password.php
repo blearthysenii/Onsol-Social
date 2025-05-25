@@ -8,7 +8,7 @@ $showForm = false;
 if (isset($_GET['token'])) {
     $token = $_GET['token'];
 
-    // Kontrollo në DB nëse token ekziston dhe nuk ka skaduar
+    
     $stmt = $conn->prepare("SELECT id FROM users WHERE reset_token = ? AND reset_expires > NOW()");
     $stmt->bind_param("s", $token);
     $stmt->execute();
@@ -29,7 +29,7 @@ if (isset($_GET['token'])) {
             } else {
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-                // Update fjalëkalimin dhe fshij token-in
+                
                 $stmtUpdate = $conn->prepare("UPDATE users SET password = ?, reset_token = NULL, reset_expires = NULL WHERE id = ?");
                 $stmtUpdate->bind_param("si", $hashedPassword, $user['id']);
                 if ($stmtUpdate->execute()) {
@@ -54,7 +54,7 @@ if (isset($_GET['token'])) {
     <meta charset="UTF-8" />
     <title>Reset Password</title>
     <style>
-        /* Ngjashëm me stilin që ke tek forgot_password.php */
+        
         body {
             background: linear-gradient(135deg, #000000, #0a1a3f);
             color: white;
