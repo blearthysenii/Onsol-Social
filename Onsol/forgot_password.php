@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $resetLink = "https://f846-185-222-138-132.ngrok-free.app/Onsol-Social/Onsol/reset_password.php?token=" . $token;
 
 
-            // Dërgimi i emailit me PHPMailer
+            // Sent email with PHPMailer
             $mail = new PHPMailer(true);
 
             try {
@@ -54,8 +54,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $mail->isSMTP();
                 $mail->Host       = 'smtp.gmail.com';
                 $mail->SMTPAuth   = true;
-                $mail->Username   = 'blearthyseni834@gmail.com';  // vendos emailin tënd të Gmail
-                $mail->Password   = 'ykwh xshv qsyp nzaq'; // vendos fjalëkalimin ose app password
+                $mail->Username   = 'blearthyseni834@gmail.com';  
+                $mail->Password   = 'ykwh xshv qsyp nzaq'; 
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port       = 587;
 
