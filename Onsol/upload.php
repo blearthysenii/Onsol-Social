@@ -62,7 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Upload Photo - Onsol</title>
+    <title>Upload Photo</title>
+    <link rel="icon" href="images/logo6.png" sizes="32x32" type="image/png" />
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

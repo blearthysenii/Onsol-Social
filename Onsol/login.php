@@ -1,11 +1,83 @@
-<?php
+<?php 
 session_start();
-include 'db.php';
 
-$errorMessage = '';
+if (isset($_SESSION['user'])) {
+    header("Location: index.php");
+    exit;
+}
+
+
+require_once 'C:/Users/Bleart Hyseni/Downloads/google-api-php-client-v2.18.3-PHP8.0/vendor/autoload.php';
+require_once 'db.php'; 
+
+$client = new Google_Client();
+$client->setClientId('54608319245-k5a23jc448mrid8uh6t4d58d2iaj6d4s.apps.googleusercontent.com');
+$client->setClientSecret('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');
+$client->setRedirectUri('http://localhost/Onsol-Social/Onsol/login.php');
+$client->addScope('email');
+$client->addScope('profile');
+
 $showWelcomeMessage = true;
+$errorMessage = '';
+
+
+if (isset($_GET['code'])) {
+    $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+
+    if (!isset($token['error'])) {
+        $client->setAccessToken($token['access_token']);
+        $oauth2 = new Google_Service_Oauth2($client);
+        $userInfo = $oauth2->userinfo->get();
+
+        $email = $userInfo->email;
+        $name = $userInfo->name;
+        $username = explode('@', $email)[0];
+
+        
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+        } else {
+            
+            $stmtInsert = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, NULL)");
+            $stmtInsert->bind_param("ss", $username, $email);
+            $stmtInsert->execute();
+
+            $userId = $stmtInsert->insert_id;
+
+            $user = [
+                'id' => $userId,
+                'username' => $username,
+                'email' => $email,
+                'name' => $name
+            ];
+        }
+
+        
+        $_SESSION['user'] = [
+            'id' => $user['id'],
+            'username' => $user['username'],
+            'name' => $name,
+            'email' => $email
+        ];
+
+        header("Location: index.php");
+        exit;
+
+    } else {
+        $errorMessage = "Google OAuth error: " . htmlspecialchars($token['error_description']);
+        $showWelcomeMessage = false;
+    }
+}
+
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    
+
     $username = trim($_POST['username']);
     $password = $_POST['password'];
 
@@ -18,10 +90,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($result && $result->num_rows === 1) {
         $user = $result->fetch_assoc();
 
-        if (password_verify($password, $user['password'])) {
+        
+        if ($user['password'] !== null && password_verify($password, $user['password'])) {
             $_SESSION['user'] = $user;
             header("Location: index.php");
             exit;
+        } else if ($user['password'] === null) {
+            $errorMessage = "Please login with Google for this account.";
+            $showWelcomeMessage = false;
         } else {
             $errorMessage = "Incorrect password!";
             $showWelcomeMessage = false;
@@ -34,10 +110,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->close();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="images/logo.png" sizes="32x32" type="image/png" />
     <title>Login</title>
     <style>
         * {
@@ -212,6 +290,38 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         .signup-link:hover::after {
             transform: scaleX(1);
         }
+        .google-login-btn {
+    margin-left:60px;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3a2a6a;
+    background-image: linear-gradient(45deg, #3a2a6a 0%, #0050ff 100%);
+    color: white;
+    border-radius: 25px;
+    text-decoration: none !important;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.google-login-btn::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 5px;
+    width: 100%;
+    height: 2px;
+    background: white;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+.google-login-btn:hover {
+            transform: scale(1.01);
+            box-shadow: 0 2px 10px rgba(0, 180, 255, 0.7);
+        }
+
+        
 
         @keyframes fadeIn {
             from {
@@ -251,12 +361,28 @@ if (!empty($errorMessage)) {
     <form action="login.php" method="POST" autocomplete="off">
         <input type="text" name="username" placeholder="Username" required />
         <input type="password" name="password" placeholder="Password" required />
+        <p class="signup-text">
+            Forgot your password? 
+            <a href="forgot_password.php" class="signup-link">Reset it here</a>
+        </p>
         <button type="submit">Login</button>
     </form>
-    <p class="signup-text">
+
+<p class="signup-text" style="margin-top: 25px;">
         Don't have an account? 
         <a href="register.php" class="signup-link">Create one!</a>
     </p>
+
+
+    <div >
+        <a href="<?php echo htmlspecialchars($client->createAuthUrl()); ?>" 
+   class="google-login-btn" 
+   style="display: flex; align-items: center; gap: 8px; justify-content: flex-start; width: max-content;">
+    Login with Google
+    <img src="images/google.png" alt="Google Icon" width="20" height="20" />
+</a>
+    </div>
+
 </div>
 
 </body>

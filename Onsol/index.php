@@ -65,7 +65,8 @@ function getComments($conn, $photo_id) {
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Onsol - Public Photo Feed</title>
+    <title>Home</title>
+    <link rel="icon" href="images/logo.png" sizes="32x32" type="image/png" />
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

@@ -1,6 +1,9 @@
 <?php
 include 'db.php';
 
+
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
 $message = "";
 $messageType = "";
 
@@ -15,21 +18,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = "Invalid email format.";
         $messageType = "error";
+    } elseif (strlen($password) < 8) {
+        $message = "Password must be at least 8 characters.";
+        $messageType = "error";
     } else {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hash')";
 
-        if ($conn->query($sql) === TRUE) {
+        try {
+            $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hash')";
+            $conn->query($sql);
             $message = "Registration successful! Redirecting to login...";
             $messageType = "success";
             header("refresh:2; url=login.php");
-        } else {
-            if ($conn->errno == 1062) {
+        } catch (mysqli_sql_exception $e) {
+            if ($e->getCode() == 1062) {
                 $message = "Username or email already exists.";
+                $messageType = "error";
             } else {
-                $message = "Error: " . $conn->error;
+                $message = "Error: " . $e->getMessage();
+                $messageType = "error";
             }
-            $messageType = "error";
         }
     }
 }
@@ -39,7 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Register</title>
+    <title>Signup</title>
+    <link rel="icon" href="images/logo.png" sizes="32x32" type="image/png" />
     <style>
         * {
             box-sizing: border-box;
