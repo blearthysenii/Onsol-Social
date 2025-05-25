@@ -1,7 +1,7 @@
 <?php
+// upload.php
 session_start();
 include 'db.php';
-
 
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
@@ -19,18 +19,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (in_array($fileType, $allowedTypes)) {
             $maxFileSize = 5 * 1024 * 1024; 
             if ($_FILES['photo']['size'] <= $maxFileSize) {
-                
+
                 $ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
                 $newFileName = uniqid('photo_', true) . '.' . $ext;
 
-                $uploadDir = 'uploads/';
+               
+                $uploadDir = __DIR__ . '/upload/';
+                
+                
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+
                 $uploadPath = $uploadDir . $newFileName;
 
                 if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadPath)) {
-                    
+
                     $caption = trim($_POST['caption'] ?? '');
 
-                    
                     $stmt = $conn->prepare("INSERT INTO photos (user_id, image_path, caption) VALUES (?, ?, ?)");
                     $stmt->bind_param("iss", $_SESSION['user']['id'], $newFileName, $caption);
 
@@ -38,8 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $success = "Photo uploaded successfully!";
                     } else {
                         $error = "Database error: " . $stmt->error;
-                        
-                        unlink($uploadPath);
+                        unlink($uploadPath); 
                     }
 
                     $stmt->close();
@@ -65,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Upload Photo</title>
     <link rel="icon" href="images/logo6.png" sizes="32x32" type="image/png" />
     <style>
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #000000, #0a1a3f);
@@ -102,11 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 16px;
             outline: none;
         }
-        input[type="file"] {
-            background-color: rgba(255,255,255,0.15);
-            color: #fff;
-        }
-        input[type="text"] {
+        input[type="file"], input[type="text"] {
             background-color: rgba(255,255,255,0.15);
             color: #fff;
         }
