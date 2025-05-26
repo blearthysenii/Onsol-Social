@@ -160,6 +160,7 @@ if ($result) {
         transition: transform 0.3s ease;
     }
     .photo-card:hover {
+        background: linear-gradient(135deg, rgba(20, 0, 40, 0.95), rgba(0, 30, 100, 0.95));
         transform: scale(1.02);
         box-shadow: 0 0 20px #0050ff;
     }
