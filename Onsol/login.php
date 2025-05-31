@@ -1,8 +1,9 @@
 <?php 
 session_start();
 
+
 if (isset($_SESSION['user'])) {
-    header("Location: index.php");
+    header("Location: home.php");
     exit;
 }
 
@@ -65,7 +66,7 @@ if (isset($_GET['code'])) {
             'email' => $email
         ];
 
-        header("Location: index.php");
+        header("Location: home.php");
         exit;
 
     } else {
@@ -93,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         if ($user['password'] !== null && password_verify($password, $user['password'])) {
             $_SESSION['user'] = $user;
-            header("Location: index.php");
+            header("Location: home.php");
             exit;
         } else if ($user['password'] === null) {
             $errorMessage = "Please login with Google for this account.";
@@ -116,6 +117,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="images/logo.png" sizes="32x32" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
     <title>Login</title>
     <style>
         * {
@@ -149,7 +152,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             transition: all 0.9s ease-in-out;
             z-index: 10;
             position: relative;
-        }
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.7));
+             backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2); /* kufi i lehtë si te xhami */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* pak hije për thellësi */
+}
+
+
 
         .login-container:hover {
            background: linear-gradient(135deg, rgba(20, 0, 40, 0.95), rgba(0, 30, 100, 0.95));
@@ -180,7 +190,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         .login-container input::placeholder {
-            color: #eee;
+            color: rgba(128, 128, 128, 0.7); 
         }
 
         .login-container button {
@@ -344,9 +354,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 transform: translateX(-50%) translateY(0);
             }
         }
+        #backgroundCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1; 
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+}
+
     </style>
 </head>
 <body>
+    <canvas id="backgroundCanvas"></canvas>
+
 
 <?php
 if (!empty($errorMessage)) {
@@ -363,7 +385,7 @@ if (!empty($errorMessage)) {
         <input type="password" name="password" placeholder="Password" required />
         <p class="signup-text">
             Forgot your password? 
-            <a href="forgot_password.php" class="signup-link">Reset it here</a>
+            <a href="forgot_password.php" class="signup-link">Reset it here!</a>
         </p>
         <button type="submit">Login</button>
     </form>
@@ -384,6 +406,45 @@ if (!empty($errorMessage)) {
     </div>
 
 </div>
+<script>
+const canvas = document.getElementById('backgroundCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let stars = [];
+for (let i = 0; i < 150; i++) {
+    stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5
+    });
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let s of stars) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff88';
+        ctx.fill();
+        s.x += s.dx;
+        s.y += s.dy;
+        if (s.x < 0 || s.x > canvas.width) s.dx *= -1;
+        if (s.y < 0 || s.y > canvas.height) s.dy *= -1;
+    }
+    requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+
 
 </body>
 </html>
