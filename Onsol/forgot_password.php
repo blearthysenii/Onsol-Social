@@ -43,7 +43,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmtUpdate->bind_param("ssi", $token, $expires, $user['id']);
             $stmtUpdate->execute();
 
-            $resetLink = "https://f846-185-222-138-132.ngrok-free.app/Onsol-Social/Onsol/reset_password.php?token=" . $token;
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+            $host = $_SERVER['HTTP_HOST']; // ky merr domainin aktual nga kërkesa
+            $resetLink = $protocol . "://" . $host . "/Onsol-Social/Onsol/reset_password.php?token=" . $token;
+  
 
 
             // Sent email with PHPMailer
@@ -60,14 +63,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $mail->Port       = 587;
 
                 // Recipients
-                $mail->setFrom('no-reply@yourdomain.com', 'Your App Name');
+                $mail->setFrom('no-reply@yourdomain.com', 'Onsol');
                 $mail->addAddress($email);
 
                 // Content
                 $mail->isHTML(true);
                 $mail->Subject = 'Password Reset Request';
                 $mail->Body    = "
-                    <p>Hello,</p>
+                    <p>Hello, from Onsol</p>
                     <p>Please click the link below to reset your password:</p>
                     <p><a href='$resetLink'>$resetLink</a></p>
                     <p>This link will expire in 1 hour.</p>
@@ -91,8 +94,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Forgot Password</title>
     <link rel="icon" href="images/logo.png" sizes="32x32" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>Forgot Password</title>
     <style>
         * {
             box-sizing: border-box;
@@ -125,7 +130,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             transition: all 0.9s ease-in-out;
             z-index: 10;
             position: relative;
-        }
+             backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2); /* kufi i lehtë si te xhami */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* pak hije për thellësi */
+}
+
 
         .forgot-container:hover {
             background: linear-gradient(135deg, rgba(20, 0, 40, 0.95), rgba(0, 30, 100, 0.95));
@@ -156,7 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         .forgot-container input::placeholder {
-            color: #eee;
+            color: rgba(128, 128, 128, 0.7); 
         }
 
         .forgot-container button {
@@ -255,9 +265,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 transform: scale(1);
             }
         }
+        #backgroundCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1; 
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+}
+
     </style>
 </head>
 <body>
+<canvas id="backgroundCanvas"></canvas>
 
 <div class="forgot-container">
     <h2>Forgot Password</h2>
@@ -275,8 +296,48 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <p class="signup-text">
     Remembered your password? 
-    <a href="login.php" class="back-to-login-link">Back to login</a>
+    <a href="login.php" class="back-to-login-link">Back to login!</a>
 </p>
+<script>
+const canvas = document.getElementById('backgroundCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let stars = [];
+for (let i = 0; i < 150; i++) {
+    stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5
+    });
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let s of stars) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff88';
+        ctx.fill();
+        s.x += s.dx;
+        s.y += s.dy;
+        if (s.x < 0 || s.x > canvas.width) s.dx *= -1;
+        if (s.y < 0 || s.y > canvas.height) s.dy *= -1;
+    }
+    requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+
+
 
 </body>
 </html>
