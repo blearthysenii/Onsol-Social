@@ -11,7 +11,7 @@ class Chat {
         $this->userId = $userId;
     }
 
-    // Merr miqtë e përdoruesit
+    
     public function getFriends() {
         $sql = "SELECT DISTINCT u.id, u.username 
                 FROM users u
@@ -31,7 +31,7 @@ class Chat {
         return $friends;
     }
 
-    // Merr mesazhet mes përdoruesit aktual dhe një mikut të caktuar
+    
     public function getMessagesWith($friendId) {
         $sql = "SELECT * FROM messages 
                 WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
@@ -49,7 +49,7 @@ class Chat {
         return $messages;
     }
 
-    // Dërgon një mesazh
+   
     public function sendMessage($to, $message) {
         $insertStmt = $this->conn->prepare("INSERT INTO messages (sender_id, receiver_id, message) VALUES (?, ?, ?)");
         $insertStmt->bind_param("iis", $this->userId, $to, $message);
@@ -57,7 +57,7 @@ class Chat {
     }
 }
 
-// Kontrollo nëse user është i loguar
+
 if (!isset($_SESSION['user'])) {
     echo "You are not logged in.";
     exit;
@@ -65,13 +65,13 @@ if (!isset($_SESSION['user'])) {
 
 $currentUserId = $_SESSION['user']['id'];
 
-// Krijo objektin e chat-it
+
 $chat = new Chat($conn, $currentUserId);
 
-// Merr miqtë
+
 $friends = $chat->getFriends();
 
-// Proces POST për mesazhe
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $to = intval($_POST['to']);
     $message = trim($_POST['message']);
@@ -83,10 +83,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Merr ID-në e mikut për chat
+
 $with = isset($_GET['with']) ? intval($_GET['with']) : 0;
 
-// Merr mesazhet nëse kemi mik të zgjedhur
+
 $messages = [];
 if ($with) {
     $messages = $chat->getMessagesWith($with);
@@ -120,7 +120,7 @@ if ($with) {
     margin-top: 200px;
     max-width: 700px;
     width: 100%;
-    background: rgba(255, 255, 255, 0.1); /* ngjyrë shumë transparente */
+    background: rgba(255, 255, 255, 0.1); 
     border-radius: 12px;
     padding: 25px;
     display: flex;
@@ -132,8 +132,8 @@ if ($with) {
     z-index: 10;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2); /* kufi i lehtë si te xhami */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* pak hije për thellësi */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); 
 }
 
 
@@ -177,7 +177,7 @@ if ($with) {
 .chatapp__friend-item {
     margin: 10px 5px;
     border-radius: 12px;
-    background: transparent; /* Transparent fill */
+    background: transparent; 
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     transition: all 0.3s ease-in-out;
     overflow: hidden;
@@ -186,7 +186,7 @@ if ($with) {
 
 .chatapp__friend-item:hover {
     transform: translateY(-2px);
-    background: rgba(128, 128, 128, 0.15); /* Gri i lehtë me transparencë */
+    background: rgba(128, 128, 128, 0.15); 
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
 }
 

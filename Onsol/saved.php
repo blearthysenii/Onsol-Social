@@ -9,7 +9,7 @@ if (!isset($_SESSION['user'])) {
 
 $user_id = $_SESSION['user']['id'];
 
-// Funksioni për marrjen e username
+
 function getUsername($conn, $user_id) {
     $stmt = $conn->prepare("SELECT username FROM users WHERE id = ?");
     $stmt->bind_param("i", $user_id);
@@ -21,7 +21,7 @@ function getUsername($conn, $user_id) {
     return "Unknown";
 }
 
-// Trajto kërkesën POST për Unsave
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unsave_photo_id'])) {
     $unsave_photo_id = intval($_POST['unsave_photo_id']);
     $stmt = $conn->prepare("DELETE FROM saved_photos WHERE user_id = ? AND photo_id = ?");
@@ -29,12 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unsave_photo_id'])) {
     $stmt->execute();
     $stmt->close();
 
-    // Redirect për të rifreskuar faqen dhe shmangur POST ulangim
+   
     header("Location: saved.php");
     exit;
 }
 
-// Nxjerr fotot e ruajtura
+
 $stmt = $conn->prepare("
     SELECT photos.* FROM photos
     INNER JOIN saved_photos ON photos.id = saved_photos.photo_id
@@ -96,8 +96,8 @@ $stmt->close();
     z-index: 10;
      backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2); /* kufi i lehtë si te xhami */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* pak hije për thellësi */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); 
 }
 
 .container:hover {

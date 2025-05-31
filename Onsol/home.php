@@ -182,8 +182,8 @@ if ($result) {
         transition: transform 0.3s ease;
          backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2); /* kufi i lehtë si te xhami */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* pak hije për thellësi */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 
 
     }

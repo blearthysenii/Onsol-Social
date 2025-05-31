@@ -1,10 +1,10 @@
 <?php
 session_start();
-require 'db.php'; // lidhja me DB
+require 'db.php'; 
 
 $current_user_id = $_SESSION['user_id'];
 
-// Merr të gjithë përdoruesit përveç vetes
+
 $sql = "SELECT id, username FROM users WHERE id != ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $current_user_id);
@@ -17,7 +17,7 @@ while ($user = $result->fetch_assoc()) {
     $user_id = $user['id'];
     $username = htmlspecialchars($user['username']);
     
-    // Kontrollo nëse ka kërkesë miqësie aktive ose janë tashmë miq
+    
     $checkSql = "SELECT * FROM friendships WHERE 
         (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
     $checkStmt = $conn->prepare($checkSql);
@@ -26,7 +26,7 @@ while ($user = $result->fetch_assoc()) {
     $checkResult = $checkStmt->get_result();
 
     if ($checkResult->num_rows == 0) {
-        // Nuk janë miq dhe nuk ka kërkesë aktive
+        
         echo "<div>$username 
                 <a href='send_request.php?friend_id=$user_id'>Shto si mik</a>
               </div>";

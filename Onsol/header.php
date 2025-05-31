@@ -69,7 +69,7 @@ header {
   align-items: center;
   height: 100%;
   gap: 40px;
-  justify-content: space-between; /* kjo vendos elementet ne skajet e containerit */
+  justify-content: space-between; 
 }
 
 .header-container h1 {
@@ -80,16 +80,15 @@ header {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
-  flex-shrink: 0; /* mos lejo që titulli të zvogëlohet */
+  flex-shrink: 0; /
 }
 
-/* Për të vendosur ikonat ne mes, do përdorim flex me auto margins */
 
 .header-container nav {
   display: flex;
   gap: 30px;
   justify-content: center;
-  flex-grow: 1; /* ikona zgjerohet në mes */
+  flex-grow: 1; 
 }
 
 nav{
@@ -142,8 +141,8 @@ nav a.active {
   box-sizing: border-box;
    backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2); /* kufi i lehtë si te xhami */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* pak hije për thellësi */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); 
 }
 
 
@@ -156,7 +155,7 @@ nav a.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0; /* ose padding i vogël, për të mos shtyrë ikonën */
+  padding: 0; 
   background: transparent;
   border: none;
   color: #fff;

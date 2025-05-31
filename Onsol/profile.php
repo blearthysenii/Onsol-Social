@@ -10,24 +10,24 @@ if (!isset($_SESSION['user'])) {
 
 $user_id = $_SESSION['user']['id'];
 
-// Nëse ka POST, përditëso të dhënat
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $fullname = trim($_POST['fullname']);
     $email = trim($_POST['email']);
     
-    // Këtu mund të bësh validime nëse dëshiron (p.sh. email valid, username jo bosh, etj)
+
     
     $stmt = $conn->prepare("UPDATE users SET username = ?, fullname = ?, email = ? WHERE id = ?");
     $stmt->bind_param("sssi", $username, $fullname, $email, $user_id);
     $stmt->execute();
     $stmt->close();
     
-    // Opsionale: përditëso session username nëse e përdor
+    
     $_SESSION['user']['username'] = $username;
 }
 
-// Merr të dhënat më të fundit nga DB
+
 $stmt = $conn->prepare("SELECT username, email, fullname FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -82,8 +82,8 @@ $stmt->close();
             animation: fadeIn 1s ease-in-out;
              backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2); /* kufi i lehtë si te xhami */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* pak hije për thellësi */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); 
 }
 
         

@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmtUpdate->execute();
 
             $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-            $host = $_SERVER['HTTP_HOST']; // ky merr domainin aktual nga kërkesa
+            $host = $_SERVER['HTTP_HOST']; 
             $resetLink = $protocol . "://" . $host . "/Onsol-Social/Onsol/reset_password.php?token=" . $token;
   
 
@@ -132,8 +132,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             position: relative;
              backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2); /* kufi i lehtë si te xhami */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* pak hije për thellësi */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); 
 }
 
 

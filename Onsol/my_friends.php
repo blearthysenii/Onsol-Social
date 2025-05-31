@@ -14,7 +14,7 @@ $stmt->bind_param("ii", $current_user_id, $current_user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-echo "<h2>Miqtë e mi</h2>";
+echo "<h2>My friends</h2>";
 
 while ($friend = $result->fetch_assoc()) {
     echo "<div>" . htmlspecialchars($friend['username']) . "</div>";
