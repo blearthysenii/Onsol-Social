@@ -18,55 +18,77 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
       padding: 0;
       box-sizing: border-box;
       font-family: 'Orbitron', sans-serif;
-    }
+   * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Orbitron', sans-serif;
+}
 
-    body {
-      background: linear-gradient(135deg, #000000, #0a1a3f);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      position: relative;
-      color: white;
-    }
+body {
+  background: linear-gradient(135deg, #000000, #0a1a3f);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  color: white;
+}
 
-    .logo {
-      display: flex;
-      gap: 15px;
-      perspective: 800px;
-    }
+.logo {
+  display: flex;
+  gap: 15px;
+  perspective: 800px;
+}
 
-    .letter {
-      font-size: 100px;
-      font-weight: 700;
-      color: transparent;
-      background: linear-gradient(90deg, #00f2ff, #ff00d4);
-      -webkit-background-clip: text;
-      animation: flipIn 1s forwards;
-      transform: rotateY(90deg);
-      opacity: 0;
-    }
+.letter {
+  font-size: 100px;
+  font-weight: 700;
+  color: transparent;
+  background: linear-gradient(90deg, #00f2ff, #ff00d4);
+  -webkit-background-clip: text;
+  animation: flipIn 1s forwards, glowPulse 2.5s ease-in-out infinite;
+  transform: rotateY(90deg);
+  opacity: 0;
+  text-shadow: 0 0 10px rgba(255, 0, 255, 0.7), 
+               0 0 20px rgba(0, 255, 255, 0.6), 
+               0 0 30px rgba(255, 255, 255, 0.2);
+}
 
-    .letter:nth-child(1) { animation-delay: 0.2s; }
-    .letter:nth-child(2) { animation-delay: 0.4s; }
-    .letter:nth-child(3) { animation-delay: 0.6s; }
-    .letter:nth-child(4) { animation-delay: 0.8s; }
-    .letter:nth-child(5) { animation-delay: 1s; }
+.letter:nth-child(1) { animation-delay: 0.2s; }
+.letter:nth-child(2) { animation-delay: 0.4s; }
+.letter:nth-child(3) { animation-delay: 0.6s; }
+.letter:nth-child(4) { animation-delay: 0.8s; }
+.letter:nth-child(5) { animation-delay: 1s; }
 
-    @keyframes flipIn {
-      to {
-        transform: rotateY(0deg);
-        opacity: 1;
-      }
-    }
+@keyframes flipIn {
+  to {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+}
 
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: -1;
-    }
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.7),
+                 0 0 20px rgba(0, 255, 255, 0.6),
+                 0 0 30px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 0, 255, 1),
+                 0 0 40px rgba(0, 255, 255, 1),
+                 0 0 60px rgba(255, 255, 255, 0.4);
+  }
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
   </style>
 </head>
 <body>
